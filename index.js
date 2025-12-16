@@ -1,9 +1,16 @@
-let state = 1;
+let state = {
+  compteur: 1,
+  salutation: ''
+};
 
 const listeners = [];
 
 function increment() {
-  state++;
+  state.compteur++;
+}
+
+function sayHello() {
+  state.salutation = "Salut !!";
 }
 
 function dispatch(actionFunction) {
@@ -26,4 +33,4 @@ subscribe(() => {
 
 dispatch()
 dispatch(increment)
-dispatch(increment)
+dispatch(sayHello)
