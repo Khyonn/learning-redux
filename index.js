@@ -2,18 +2,18 @@ let state;
 
 const listeners = [];
 
-function createGranularity(fonctionsParNom) {
-  return function granularity(etatParNom = {}, action) {
-    for (const nom in fonctionsParNom) {
-      const getNouvelleValeur = fonctionsParNom[nom];
-      const ancienneValeur = etatParNom[nom];
-      const nouvelleValeur = getNouvelleValeur(etatParNom[nom], action);
+function combineReducers(reducersObject) {
+  return function combinedReducer(initalState = {}, action) {
+    for (const reducerName in reducersObject) {
+      const reducer = reducersObject[reducerName];
+      const oldValue = initalState[reducerName];
+      const newValue = reducer(initalState[reducerName], action);
 
-      if (ancienneValeur !== nouvelleValeur) {
-        etatParNom = { ...etatParNom, [nom]: nouvelleValeur };
+      if (oldValue !== newValue) {
+        initalState = { ...initalState, [reducerName]: newValue };
       }
     }
-    return etatParNom;
+    return initalState;
   };
 }
 
@@ -28,13 +28,13 @@ function salutation(salutation = "", action) {
   return salutation;
 }
 
-const getNouvelEtat = createGranularity({
+const rootReducer = combineReducers({
   compteur,
   salutation,
 });
 
 function dispatch(action) {
-  state = getNouvelEtat(state, action);
+  state = rootReducer(state, action);
   // inform listeners
   listeners.forEach((listener) => listener());
 }
