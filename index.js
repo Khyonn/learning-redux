@@ -1,20 +1,38 @@
-let state = {
-  compteur: 1,
-  salutation: ''
-};
+let state;
 
 const listeners = [];
 
-function increment() {
-  state.compteur++;
+function createGranularity(fonctionsParNom) {
+  return function granularity(etatParNom = {}, action) {
+    for (const nom in fonctionsParNom) {
+      const getNouvelleValeur = fonctionsParNom[nom];
+      const ancienneValeur = etatParNom[nom];
+      const nouvelleValeur = getNouvelleValeur(etatParNom[nom], action);
+
+      if (ancienneValeur !== nouvelleValeur) {
+        etatParNom = { ...etatParNom, [nom]: nouvelleValeur };
+      }
+    }
+    return etatParNom;
+  };
 }
 
-function sayHello() {
-  state.salutation = "Salut !!";
+function compteur(compteur = 1, action) {
+  if (action === "incremente le compteur") return compteur + 1;
+  return compteur;
+}
+function salutation(salutation = "", action) {
+  if (action === "dis bonjour") return "Bonjour";
+  return salutation;
 }
 
-function dispatch(actionFunction) {
-  if (actionFunction) actionFunction();
+const getNouvelEtat = createGranularity({
+  compteur,
+  salutation,
+});
+
+function dispatch(action) {
+  state = getNouvelEtat(state, action);
   // inform listeners
   listeners.forEach((listener) => listener());
 }
@@ -31,6 +49,6 @@ subscribe(() => {
   console.log(state);
 });
 
-dispatch()
-dispatch(increment)
-dispatch(sayHello)
+dispatch();
+dispatch("incremente le compteur");
+dispatch("dis bonjour");
