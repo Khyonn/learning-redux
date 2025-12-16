@@ -18,11 +18,13 @@ function createGranularity(fonctionsParNom) {
 }
 
 function compteur(compteur = 1, action) {
-  if (action === "incremente le compteur") return compteur + 1;
+  if (action.type === "incremente le compteur") return compteur + 1;
+  if (action.type === "decremente le compteur") return compteur - 1;
+  if (action.type === "ajoute X au compteur") return compteur + action.payload;
   return compteur;
 }
 function salutation(salutation = "", action) {
-  if (action === "dis bonjour") return "Bonjour";
+  if (action.type === "dis bonjour") return "Bonjour";
   return salutation;
 }
 
@@ -49,6 +51,9 @@ subscribe(() => {
   console.log(state);
 });
 
-dispatch();
-dispatch("incremente le compteur");
-dispatch("dis bonjour");
+dispatch({ type: "Initialisation" });
+dispatch({ type: "incremente le compteur" });
+dispatch({ type: "incremente le compteur" });
+dispatch({ type: "decremente le compteur" });
+dispatch({ type: "dis bonjour" });
+dispatch({ type: "ajoute X au compteur", payload: 5 });
